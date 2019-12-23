@@ -45,3 +45,24 @@ variable "bigiq_password" {
 variable "license_pool" {
   type = string
 }
+
+variable "external_self_ip" {
+  type = string
+}
+
+variable "internal_self_ip" {
+  type = string
+}
+
+variable "management_ip" {
+  type = string
+}
+
+variable "default_tags" {
+  type = map
+  default = {}
+}
+
+variable "name_prefix" {
+  default = ""
+}

@@ -50,41 +50,40 @@ resource "aws_instance" "f5_auto_demo_ltm" {
     EOF
   }
 
-  tags = {
-    Name  = "F5_Auto_Demo_LTM-${terraform.workspace}"
-    Group = "ServiceNow-Demo"
-  }
+  tags = "${merge(map( 
+          "Name", "${var.name_prefix}-F5_LTM"
+      ), var.default_tags)}"
 }
 
 # Network Interfaces
 resource "aws_network_interface" "f5_external" {
   subnet_id                   = var.external_subnet_id
   security_groups             = [aws_security_group.f5_auto_vip_sg.id]
-  private_ips                 = ["10.0.1.10"]
+  private_ips                 = [var.external_self_ip]
 
-  tags = {
-    Name    = "f5_external-${terraform.workspace}"
-    Purpose = "servicenow-demo"
-  }
+
+  tags = "${merge(map( 
+          "Name", "${var.name_prefix}-f5_external"
+      ), var.default_tags)}"
 }
 
 resource "aws_network_interface" "f5_internal" {
   subnet_id                   = var.internal_subnet_id
-  private_ips                 = ["10.0.2.10"]
+  private_ips                 = [var.internal_self_ip]
 
-  tags = {
-    Name = "f5_internal-${terraform.workspace}"
-  }
+  tags = "${merge(map( 
+          "Name", "${var.name_prefix}-f5_internal"
+      ), var.default_tags)}"
 }
 
 resource "aws_network_interface" "f5_mgmt" {
   subnet_id                   = var.mgmt_subnet_id
   security_groups             = [aws_security_group.f5_mgmt_sg.id]
-  private_ips                 = ["10.0.3.10"]
+  private_ips                 = [var.management_ip]
 
-  tags = {
-    Name = "f5_mgmt-${terraform.workspace}"
-  }
+  tags = "${merge(map( 
+        "Name", "${var.name_prefix}-f5_mgmt"
+    ), var.default_tags)}"
 }
 
 # ENI Data Sources
@@ -100,16 +99,18 @@ data "aws_network_interface" "f5_mgmt" {
 resource "aws_eip" "f5_mgmt_ip" {
   vpc                       = true
   network_interface         = aws_network_interface.f5_mgmt.id
-  associate_with_private_ip = "10.0.3.10"
-  tags = {
-    Name = "f5_mgmt-${terraform.workspace}"
-  }
+  associate_with_private_ip = var.management_ip
+
+  tags = "${merge(map( 
+        "Name", "${var.name_prefix}-f5_mgmt"
+    ), var.default_tags)}"
+
   depends_on = [aws_instance.f5_auto_demo_ltm]
 }
 
 # Security Groups
 resource "aws_security_group" "f5_auto_vip_sg" {
-  name        = "f5_auto_vip_sg"
+  name        = "${var.name_prefix}-f5_auto_vip_sg"
   description = "Allow inbound HTTP and HTTPS trafic"
   vpc_id      = var.vpc_id
 
@@ -143,7 +144,7 @@ resource "aws_security_group" "f5_auto_vip_sg" {
 }
 
 resource "aws_security_group" "f5_mgmt_sg" {
-  name        = "f5_mgmt_sg"
+  name        = "${var.name_prefix}-f5_mgmt_sg"
   description = "Allow inbound SSH and HTTPS trafic"
   vpc_id      = var.vpc_id
 
