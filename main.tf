@@ -50,9 +50,7 @@ resource "aws_instance" "f5_auto_demo_ltm" {
     EOF
   }
 
-  tags = "${merge(map( 
-          "Name", "${var.name_prefix}-F5_LTM"
-      ), var.default_tags)}"
+  tags = merge(map("Name", "${var.name_prefix}-F5_LTM"), var.default_tags)
 }
 
 # Network Interfaces
@@ -62,18 +60,14 @@ resource "aws_network_interface" "f5_external" {
   private_ips                 = [var.external_self_ip]
 
 
-  tags = "${merge(map( 
-          "Name", "${var.name_prefix}-f5_external"
-      ), var.default_tags)}"
+  tags = merge(map("Name", "${var.name_prefix}-f5_external"), var.default_tags)
 }
 
 resource "aws_network_interface" "f5_internal" {
   subnet_id                   = var.internal_subnet_id
   private_ips                 = [var.internal_self_ip]
 
-  tags = "${merge(map( 
-          "Name", "${var.name_prefix}-f5_internal"
-      ), var.default_tags)}"
+  tags = merge(map("Name", "${var.name_prefix}-f5_internal"), var.default_tags)
 }
 
 resource "aws_network_interface" "f5_mgmt" {
@@ -81,9 +75,7 @@ resource "aws_network_interface" "f5_mgmt" {
   security_groups             = [aws_security_group.f5_mgmt_sg.id]
   private_ips                 = [var.management_ip]
 
-  tags = "${merge(map( 
-        "Name", "${var.name_prefix}-f5_mgmt"
-    ), var.default_tags)}"
+  tags = merge(map("Name", "${var.name_prefix}-f5_mgmt"), var.default_tags)
 }
 
 # ENI Data Sources
@@ -101,9 +93,7 @@ resource "aws_eip" "f5_mgmt_ip" {
   network_interface         = aws_network_interface.f5_mgmt.id
   associate_with_private_ip = var.management_ip
 
-  tags = "${merge(map( 
-        "Name", "${var.name_prefix}-f5_mgmt"
-    ), var.default_tags)}"
+  tags = merge(map("Name", "${var.name_prefix}-f5_mgmt"), var.default_tags)
 
   depends_on = [aws_instance.f5_auto_demo_ltm]
 }
