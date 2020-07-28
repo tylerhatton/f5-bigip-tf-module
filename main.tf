@@ -18,9 +18,24 @@ data "template_file" "user_data" {
   }
 }
 
+data "aws_ami" "latest-f5-image" {
+  most_recent = true
+  owners      = ["679593333241"]
+
+  filter {
+    name = "name"
+    values = ["F5 BIGIP-15.1.0.4-0.0.6 BYOL-All Modules 2Boot*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
 # EC2 Instances
 resource "aws_instance" "f5_auto_demo_ltm" {
-  ami                  = var.AMI[var.aws_region]
+  ami                  = data.aws_ami.latest-f5-image.id
   instance_type        = "t2.large"
   key_name             = var.key_pair
   user_data            = data.template_file.user_data.rendered
