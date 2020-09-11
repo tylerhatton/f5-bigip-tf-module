@@ -9,12 +9,14 @@ data "template_file" "user_data" {
   template = "${file("${path.module}/user_data.tpl")}"
 
   vars = {
-    bigiq_server     = var.bigiq_server
-    bigiq_username   = var.bigiq_username
-    bigiq_password   = var.bigiq_password
-    license_pool     = var.license_pool
-    bigip_passsword  = random_password.admin_password.result
-    internal_self_ip = data.aws_network_interface.f5_internal.private_ip
+    bigiq_server        = var.bigiq_server
+    bigiq_username      = var.bigiq_username
+    bigiq_password      = var.bigiq_password
+    license_pool        = var.license_pool
+    hostname            = var.hostname
+    bigip_passsword     = var.admin_password != "" ? var.admin_password : random_password.admin_password.result
+    internal_self_ip    = data.aws_network_interface.f5_internal.private_ip
+    provisioned_modules = "${join(",", var.provisioned_modules)}" 
   }
 }
 
@@ -36,8 +38,8 @@ data "aws_ami" "latest-f5-image" {
 # EC2 Instances
 resource "aws_instance" "f5_auto_demo_ltm" {
   ami                  = data.aws_ami.latest-f5-image.id
-  instance_type        = "t2.large"
-  key_name             = var.key_pair
+  instance_type        = var.instance_type
+  key_name             = var.key_pair != "" ? var.key_pair : null
   user_data            = data.template_file.user_data.rendered
 
   network_interface {
@@ -65,32 +67,32 @@ resource "aws_instance" "f5_auto_demo_ltm" {
     EOF
   }
 
-  tags = merge(map("Name", "${var.name_prefix}-F5_LTM"), var.default_tags)
+  tags = merge(map("Name", "${var.name_prefix}F5_LTM"), var.default_tags)
 }
 
 # Network Interfaces
 resource "aws_network_interface" "f5_external" {
   subnet_id                   = var.external_subnet_id
-  security_groups             = [aws_security_group.f5_auto_vip_sg.id]
-  private_ips                 = [var.external_self_ip]
+  security_groups             = [aws_security_group.f5_ext_vip_sg.id]
+  private_ips                 = var.external_ips
 
 
-  tags = merge(map("Name", "${var.name_prefix}-f5_external"), var.default_tags)
+  tags = merge(map("Name", "${var.name_prefix}f5_external"), var.default_tags)
 }
 
 resource "aws_network_interface" "f5_internal" {
   subnet_id                   = var.internal_subnet_id
-  private_ips                 = [var.internal_self_ip]
+  private_ips                 = var.internal_ips
 
-  tags = merge(map("Name", "${var.name_prefix}-f5_internal"), var.default_tags)
+  tags = merge(map("Name", "${var.name_prefix}f5_internal"), var.default_tags)
 }
 
 resource "aws_network_interface" "f5_mgmt" {
-  subnet_id                   = var.mgmt_subnet_id
+  subnet_id                   = var.management_subnet_id
   security_groups             = [aws_security_group.f5_mgmt_sg.id]
   private_ips                 = [var.management_ip]
 
-  tags = merge(map("Name", "${var.name_prefix}-f5_mgmt"), var.default_tags)
+  tags = merge(map("Name", "${var.name_prefix}f5_mgmt"), var.default_tags)
 }
 
 # ENI Data Sources
@@ -104,40 +106,30 @@ data "aws_network_interface" "f5_mgmt" {
 
 # Elastic IPs
 resource "aws_eip" "f5_mgmt_ip" {
+  count                     = var.include_public_ip == true ? 1 : 0
   vpc                       = true
   network_interface         = aws_network_interface.f5_mgmt.id
   associate_with_private_ip = var.management_ip
 
-  tags = merge(map("Name", "${var.name_prefix}-f5_mgmt"), var.default_tags)
+  tags = merge(map("Name", "${var.name_prefix}f5_mgmt"), var.default_tags)
 
   depends_on = [aws_instance.f5_auto_demo_ltm]
 }
 
 # Security Groups
-resource "aws_security_group" "f5_auto_vip_sg" {
-  name        = "${var.name_prefix}-f5_auto_vip_sg"
+resource "aws_security_group" "f5_ext_vip_sg" {
+  name        = "${var.name_prefix}f5_ext_vip_sg"
   description = "Allow inbound HTTP and HTTPS trafic"
   vpc_id      = var.vpc_id
 
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 8443
-    to_port     = 8443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "ingress" {
+    for_each = var.external_sg_ports
+    content {
+      from_port   = ingress.value.port
+      to_port     = ingress.value.port
+      protocol    = ingress.value.protocol
+      cidr_blocks = ingress.value.cidr_blocks
+    }
   }
 
   egress {
@@ -149,29 +141,18 @@ resource "aws_security_group" "f5_auto_vip_sg" {
 }
 
 resource "aws_security_group" "f5_mgmt_sg" {
-  name        = "${var.name_prefix}-f5_mgmt_sg"
+  name        = "${var.name_prefix}f5_mgmt_sg"
   description = "Allow inbound SSH and HTTPS trafic"
   vpc_id      = var.vpc_id
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 8443
-    to_port     = 8443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "ingress" {
+    for_each = var.mgmt_sg_ports
+    content {
+      from_port   = ingress.value.port
+      to_port     = ingress.value.port
+      protocol    = ingress.value.protocol
+      cidr_blocks = ingress.value.cidr_blocks
+    }
   }
 
   egress {

@@ -42,7 +42,7 @@ cat << 'EOF' > /tmp/do_payload.json
     "async": true,
     "Common": {
         "class": "Tenant",
-        "hostname": "demo-f5.example.com",
+        "hostname": "${hostname}",
         "myLicense": {
             "class": "License",
             "licenseType": "licensePool",
@@ -58,7 +58,7 @@ cat << 'EOF' > /tmp/do_payload.json
         },
         "myProvisioning": {
             "class": "Provision",
-            "ltm": "nominal"
+            ${provisioned_modules}
         },
         "external": {
             "class": "VLAN",
@@ -97,4 +97,4 @@ curl -k -u admin:${bigip_passsword} -X POST -d @/tmp/do_payload.json "https://lo
 
 
 # Cleanup
-rm -f /tmp/do_payload.json
+# rm -f /tmp/do_payload.json

@@ -1,13 +1,3 @@
-variable "AMI" {
-  type = map(string)
-  default = {
-    us-east-1 = "ami-0ad5b2f2e46e1638b"
-    us-east-2 = "ami-0ac27293a0817a4a6"
-    us-west-1 = "ami-091c8ceda8668a24e"
-    us-west-2 = "ami-0fc03c0127e58ec62"
-  }
-}
-
 variable "aws_region" {
   type = string
 }
@@ -17,10 +7,16 @@ variable "vpc_id" {
 }
 
 variable "key_pair" {
-  type = string
+  type    = string
+  default = ""
 }
 
-variable "mgmt_subnet_id" {
+variable "instance_type" {
+  type    = string
+  default = "t2.large"
+}
+
+variable "management_subnet_id" {
   type = string
 }
 
@@ -32,30 +28,42 @@ variable "internal_subnet_id" {
   type = string
 }
 
+variable "management_ip" {
+  type = string
+}
+
+variable "external_ips" {
+  type = list(string)
+}
+
+variable "internal_ips" {
+  type = list(string)
+}
+
 variable "bigiq_server" {
   type = string
 }
+
 variable "bigiq_username" {
   type    = string
   default = "admin"
 }
+
 variable "bigiq_password" {
   type = string
 }
+
 variable "license_pool" {
   type = string
 }
 
-variable "external_self_ip" {
+variable "hostname" {
   type = string
+  default = "demo-f5.example.com"
 }
 
-variable "internal_self_ip" {
-  type = string
-}
-
-variable "management_ip" {
-  type = string
+variable "admin_password" {
+  default = ""
 }
 
 variable "default_tags" {
@@ -65,4 +73,48 @@ variable "default_tags" {
 
 variable "name_prefix" {
   default = ""
+}
+
+variable "provisioned_modules" {
+  type    = list(string)
+  default = ["\"ltm\": \"nominal\""]
+}
+
+variable "mgmt_sg_ports" {
+  default = [
+    {
+      port        = 22
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      port        = 443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      port        = 8443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  ]
+}
+
+variable "external_sg_ports" {
+  default = [
+    {
+      port        = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      port        = 443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  ]
+}
+
+variable "include_public_ip" {
+  default = false
 }
