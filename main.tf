@@ -1,12 +1,16 @@
+terraform {
+  required_version = "~> 0.12"
+}
+
 # Admin Password
 resource "random_password" "admin_password" {
-  length = 16
+  length  = 16
   special = false
 }
 
 # User Data Template
 data "template_file" "user_data" {
-  template = "${file("${path.module}/user_data.tpl")}"
+  template = "${file("${path.module}/templates/user_data.tpl")}"
 
   vars = {
     bigiq_server        = var.bigiq_server
@@ -16,7 +20,7 @@ data "template_file" "user_data" {
     hostname            = var.hostname
     bigip_passsword     = var.admin_password != "" ? var.admin_password : random_password.admin_password.result
     internal_self_ip    = data.aws_network_interface.f5_internal.private_ip
-    provisioned_modules = "${join(",", var.provisioned_modules)}" 
+    provisioned_modules = "${join(",", var.provisioned_modules)}"
   }
 }
 
@@ -25,7 +29,7 @@ data "aws_ami" "latest-f5-image" {
   owners      = ["679593333241"]
 
   filter {
-    name = "name"
+    name   = "name"
     values = ["F5 BIGIP-15.1.0.4-0.0.6 BYOL-All Modules 2Boot*"]
   }
 
@@ -37,10 +41,10 @@ data "aws_ami" "latest-f5-image" {
 
 # EC2 Instances
 resource "aws_instance" "f5_auto_demo_ltm" {
-  ami                  = data.aws_ami.latest-f5-image.id
-  instance_type        = var.instance_type
-  key_name             = var.key_pair != "" ? var.key_pair : null
-  user_data            = data.template_file.user_data.rendered
+  ami           = data.aws_ami.latest-f5-image.id
+  instance_type = var.instance_type
+  key_name      = var.key_pair != "" ? var.key_pair : null
+  user_data     = data.template_file.user_data.rendered
 
   network_interface {
     network_interface_id = aws_network_interface.f5_mgmt.id
@@ -72,25 +76,25 @@ resource "aws_instance" "f5_auto_demo_ltm" {
 
 # Network Interfaces
 resource "aws_network_interface" "f5_external" {
-  subnet_id                   = var.external_subnet_id
-  security_groups             = [aws_security_group.f5_ext_vip_sg.id]
-  private_ips                 = var.external_ips
+  subnet_id       = var.external_subnet_id
+  security_groups = [aws_security_group.f5_ext_vip_sg.id]
+  private_ips     = var.external_ips
 
 
   tags = merge(map("Name", "${var.name_prefix}f5_external"), var.default_tags)
 }
 
 resource "aws_network_interface" "f5_internal" {
-  subnet_id                   = var.internal_subnet_id
-  private_ips                 = var.internal_ips
+  subnet_id   = var.internal_subnet_id
+  private_ips = var.internal_ips
 
   tags = merge(map("Name", "${var.name_prefix}f5_internal"), var.default_tags)
 }
 
 resource "aws_network_interface" "f5_mgmt" {
-  subnet_id                   = var.management_subnet_id
-  security_groups             = [aws_security_group.f5_mgmt_sg.id]
-  private_ips                 = [var.management_ip]
+  subnet_id       = var.management_subnet_id
+  security_groups = [aws_security_group.f5_mgmt_sg.id]
+  private_ips     = [var.management_ip]
 
   tags = merge(map("Name", "${var.name_prefix}f5_mgmt"), var.default_tags)
 }
@@ -133,10 +137,10 @@ resource "aws_security_group" "f5_ext_vip_sg" {
   }
 
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 

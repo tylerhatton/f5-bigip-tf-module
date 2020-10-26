@@ -4,33 +4,58 @@ A Terraform module to provide a licensed F5 BIG-IP device provisioned in a multi
 
 ![Desktop Picture](/images/1.png)
 
-Module Input Variables
---------------------------
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
 
-- `aws_region` - AWS Region location of F5 BIG-IP.
-- `vpc_id` - ID of the VPC where the F5 BIG-IP will reside.
-- `key_pair` - Name of key pair to SSH into the F5 BIG-IP.
-- `instance_type` - Size of F5 BIG-IP's EC2 instance.
-- `management_subnet_id` - ID of F5 BIG-IP's management subnet.
-- `external_subnet_id` - ID of F5 BIG-IP's external subnet.
-- `internal_subnet_id` - ID of F5 BIG-IP's internal subnet.
-- `management_ip` - Private IP Address of F5 BIG-IP's management interface.
-- `external_ips` - List of private IP addresses used by F5 BIG-IP's external interface.
-- `internal_ips` - List of private IP addresses used by F5 BIG-IP's internal interface.
-- `bigiq_server` - Hostname or IP address of BIG-IQ license server that will license the F5 BIG-IP.
-- `bigiq_username` - Username of BIG-IQ license server that will license the F5 BIG-IP.
-- `bigiq_password` - Password of BIG-IQ license server that will license the F5 BIG-IP.
-- `license_pool` - Name of BIG-IQ license pool that will license the F5 BIG-IP.
-- `hostname` - Hostname of F5 BIG-IP.
-- `provisioned_modules` - List of provisioned BIG-IP modules configured on the F5 BIG-IP.
-- `default_tags` - Tags assigned to F5 BIG-IP instance.
-- `name_prefix` - Prefix added to name tags of provisioned resources.
-- `mgmt_sg_ports` - List of allowed ingress ports for management interface.
-- `external_sg_ports` - List of allowed ingress ports for external interface.
-- `include_public_ip` - Adds an EIP to the F5 BIG-IP management interface. true or false.
+| Name | Version |
+|------|---------|
+| terraform | ~> 0.12 |
 
-Usage
------
+## Providers
+
+| Name | Version |
+|------|---------|
+| random | n/a |
+| template | n/a |
+| aws | n/a |
+
+## Inputs
+
+| Name | Description | Type | Default |
+|------|-------------|------|---------|
+| aws\_region | AWS Region location of F5 BIG-IP. | `string` | n/a |
+| vpc\_id | ID of the VPC where the F5 BIG-IP will reside. | `string` | n/a |
+| key\_pair | Name of key pair to SSH into the F5 BIG-IP. | `string` | `""` |
+| instance\_type | Size of F5 BIG-IP's EC2 instance. | `string` | `"t2.large"` |
+| management\_subnet\_id | ID of F5 BIG-IP's management subnet. | `string` | n/a |
+| external\_subnet\_id | ID of F5 BIG-IP's external subnet. | `string` | n/a |
+| internal\_subnet\_id | ID of F5 BIG-IP's internal subnet. | `string` | n/a |
+| management\_ip | Private IP Address of F5 BIG-IP's management interface. | `string` | n/a |
+| external\_ips | List of private IP addresses used by F5 BIG-IP's external interface. | `list(string)` | n/a |
+| internal\_ips | List of private IP addresses used by F5 BIG-IP's internal interface. | `list(string)` | n/a |
+| bigiq\_server | Hostname or IP address of BIG-IQ license server that will license the F5 BIG-IP. | `string` | n/a |
+| bigiq\_username | Username of BIG-IQ license server that will license the F5 BIG-IP. | `string` | `"admin"` |
+| bigiq\_password | Password of BIG-IQ license server that will license the F5 BIG-IP. | `string` | n/a |
+| license\_pool | Name of BIG-IQ license pool that will license the F5 BIG-IP. | `string` | n/a |
+| hostname | Hostname of F5 BIG-IP. | `string` | `"demo-f5.example.com"` |
+| admin\_password | Admin password for F5 management console and SSH server. | `string` | `""` |
+| default\_tags | n/a | `map` | `{}` |
+| name\_prefix | n/a | `string` | `""` |
+| provisioned\_modules | List of provisioned BIG-IP modules configured on the F5 BIG-IP. | `list(string)` | <pre>[<br>  "\"ltm\": \"nominal\""<br>]</pre> |
+| mgmt\_sg\_ports | List of allowed ingress ports for management interface. | `list` | <pre>[<br>  {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "port": 22,<br>    "protocol": "tcp"<br>  },<br>  {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "port": 443,<br>    "protocol": "tcp"<br>  },<br>  {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "port": 8443,<br>    "protocol": "tcp"<br>  }<br>]</pre> |
+| external\_sg\_ports | List of allowed ingress ports for external interface. | `list` | <pre>[<br>  {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "port": 80,<br>    "protocol": "tcp"<br>  },<br>  {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "port": 443,<br>    "protocol": "tcp"<br>  }<br>]</pre> |
+| include\_public\_ip | Adds an EIP to the F5 BIG-IP management interface. true or false. | `bool` | `false` |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| f5\_management\_ip | Public IP of F5 BIG-IP's management interface. |
+| f5\_admin\_password | Password for F5 BIG-IP admin account. |
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+## Usage
 
 ```hcl
 module "f5_ltm_a" {
@@ -57,14 +82,6 @@ module "f5_ltm_a" {
 }
 ```
 
-Outputs
-=======
-
- - `f5_management_ip` - Public IP of F5 BIG-IP's management interface.
- - `f5_admin_password` - Password for F5 BIG-IP admin account.
-
-
-Authors
-=======
+## Authors
 
 tyler.hatton@wwt.com
