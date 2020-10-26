@@ -3,7 +3,8 @@ terraform {
 }
 
 provider "aws" {
-  region = var.aws_region
+  version = "~> 2.3"
+  region  = var.aws_region
 }
 
 # Admin Password

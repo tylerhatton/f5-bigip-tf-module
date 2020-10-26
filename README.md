@@ -10,6 +10,7 @@ A Terraform module to provide a licensed F5 BIG-IP device provisioned in a multi
 | Name | Version |
 |------|---------|
 | terraform | ~> 0.12 |
+| aws | ~> 2.3 |
 
 ## Providers
 
@@ -17,7 +18,7 @@ A Terraform module to provide a licensed F5 BIG-IP device provisioned in a multi
 |------|---------|
 | random | n/a |
 | template | n/a |
-| aws | n/a |
+| aws | ~> 2.3 |
 
 ## Inputs
 
