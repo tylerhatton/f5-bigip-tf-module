@@ -7,3 +7,8 @@ output "f5_admin_password" {
   value       = var.admin_password != "" ? var.admin_password : random_password.admin_password.result
   description = "Password for F5 BIG-IP admin account."
 }
+
+output "f5_mgmt_mac_address" {
+  value       = data.aws_network_interface.f5_mgmt.private_ip
+  description = "MAC address for F5 management interface. Used for licensing purposes"
+}

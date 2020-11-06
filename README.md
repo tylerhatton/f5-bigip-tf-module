@@ -9,22 +9,24 @@ A Terraform module to provide a licensed F5 BIG-IP device provisioned in a multi
 
 | Name | Version |
 |------|---------|
-| terraform | ~> 0.12 |
-| aws | ~> 2.3 |
+| terraform | >= 0.12.21 |
+| aws | >= 2.68 |
+| bigip | 1.4.0 |
+| random | >= 2.3 |
+| template | >= 2.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| random | n/a |
-| template | n/a |
-| aws | ~> 2.3 |
+| random | >= 2.3 |
+| template | >= 2.1 |
+| aws | >= 2.68 |
 
 ## Inputs
 
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
-| aws\_region | AWS Region location of F5 BIG-IP. | `string` | n/a |
 | vpc\_id | ID of the VPC where the F5 BIG-IP will reside. | `string` | n/a |
 | key\_pair | Name of key pair to SSH into the F5 BIG-IP. | `string` | `""` |
 | instance\_type | Size of F5 BIG-IP's EC2 instance. | `string` | `"t2.large"` |
@@ -53,6 +55,7 @@ A Terraform module to provide a licensed F5 BIG-IP device provisioned in a multi
 |------|-------------|
 | f5\_management\_ip | Public IP of F5 BIG-IP's management interface. |
 | f5\_admin\_password | Password for F5 BIG-IP admin account. |
+| f5\_mgmt\_mac\_address | MAC address for F5 management interface. Used for licensing purposes |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 

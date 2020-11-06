@@ -1,10 +1,5 @@
-terraform {
-  required_version = "~> 0.12"
-}
-
-provider "aws" {
-  version = "~> 2.3"
-  region  = var.aws_region
+locals {
+  admin_password = var.admin_password != "" ? var.admin_password : random_password.admin_password.result
 }
 
 # Admin Password
@@ -15,7 +10,7 @@ resource "random_password" "admin_password" {
 
 # User Data Template
 data "template_file" "user_data" {
-  template = "${file("${path.module}/templates/user_data.tpl")}"
+  template = file("${path.module}/templates/user_data.tpl")
 
   vars = {
     bigiq_server        = var.bigiq_server
@@ -23,9 +18,9 @@ data "template_file" "user_data" {
     bigiq_password      = var.bigiq_password
     license_pool        = var.license_pool
     hostname            = var.hostname
-    bigip_passsword     = var.admin_password != "" ? var.admin_password : random_password.admin_password.result
+    bigip_passsword     = local.admin_password
     internal_self_ip    = data.aws_network_interface.f5_internal.private_ip
-    provisioned_modules = "${join(",", var.provisioned_modules)}"
+    provisioned_modules = join(",", var.provisioned_modules)
   }
 }
 
@@ -66,15 +61,15 @@ resource "aws_instance" "f5_auto_demo_ltm" {
     device_index         = 2
   }
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOF
-    curl -k -u ${var.bigiq_username}:${var.bigiq_password} -X POST \
-      -H "Content-Type: application/json" \
-      -d '{"licensePoolName":"${var.license_pool}","command":"revoke","address":"${data.aws_network_interface.f5_mgmt.private_ip}","assignmentType":"UNREACHABLE","macAddress":"${upper(data.aws_network_interface.f5_mgmt.mac_address)}","hypervisor":"aws"}' \
-      https://${var.bigiq_server}/mgmt/cm/device/tasks/licensing/pool/member-management
-    EOF
-  }
+  # provisioner "local-exec" {
+  #   when    = destroy
+  #   command = <<-EOF
+  #   curl -k -u ${var.bigiq_username}:${var.bigiq_password} -X POST \
+  #     -H "Content-Type: application/json" \
+  #     -d '{"licensePoolName":"${var.license_pool}","command":"revoke","address":"${data.aws_network_interface.f5_mgmt.private_ip}","assignmentType":"UNREACHABLE","macAddress":"${upper(data.aws_network_interface.f5_mgmt.mac_address)}","hypervisor":"aws"}' \
+  #     https://${var.bigiq_server}/mgmt/cm/device/tasks/licensing/pool/member-management
+  #   EOF
+  # }
 
   tags = merge(map("Name", "${var.name_prefix}F5_LTM"), var.default_tags)
 }
@@ -171,3 +166,4 @@ resource "aws_security_group" "f5_mgmt_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+

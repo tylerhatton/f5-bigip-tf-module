@@ -1,8 +1,3 @@
-variable "aws_region" {
-  type        = string
-  description = "AWS Region location of F5 BIG-IP."
-}
-
 variable "vpc_id" {
   type        = string
   description = "ID of the VPC where the F5 BIG-IP will reside."
