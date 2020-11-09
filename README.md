@@ -63,7 +63,6 @@ A Terraform module to provide a licensed F5 BIG-IP device provisioned in a multi
 ```hcl
 module "f5_ltm_a" {
   source               = "git@github.com:wwt/f5-ltm-tf-template/"
-  aws_region           = "us-west-1"
   key_pair             = "test-key"
   name_prefix          = "${terraform.workspace}-"
 
