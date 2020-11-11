@@ -53,6 +53,9 @@ A Terraform module to provide a licensed F5 BIG-IP device provisioned in a multi
 | Name | Description |
 |------|-------------|
 | f5\_management\_ip | Public IP of F5 BIG-IP's management interface. |
+| f5\_management\_private\_ips | n/a |
+| f5\_internal\_private\_ips | n/a |
+| f5\_external\_private\_ips | n/a |
 | f5\_admin\_password | Password for F5 BIG-IP admin account. |
 | f5\_mgmt\_mac\_address | MAC address for F5 management interface. Used for licensing purposes |
 

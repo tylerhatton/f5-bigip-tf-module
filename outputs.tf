@@ -3,6 +3,18 @@ output "f5_management_ip" {
   description = "Public IP of F5 BIG-IP's management interface."
 }
 
+output "f5_management_private_ips" {
+  value = aws_network_interface.f5_mgmt.private_ips
+}
+
+output "f5_internal_private_ips" {
+  value = aws_network_interface.f5_internal.private_ips
+}
+
+output "f5_external_private_ips" {
+  value = aws_network_interface.f5_external.private_ips
+}
+
 output "f5_admin_password" {
   value       = var.admin_password != "" ? var.admin_password : random_password.admin_password.result
   description = "Password for F5 BIG-IP admin account."
