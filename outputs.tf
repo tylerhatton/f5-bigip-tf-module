@@ -4,15 +4,18 @@ output "f5_management_ip" {
 }
 
 output "f5_management_private_ips" {
-  value = aws_network_interface.f5_mgmt.private_ips
+  value       = aws_network_interface.f5_mgmt.private_ips
+  description = "Private IPs of F5 BIG-IP's management interface."
 }
 
 output "f5_internal_private_ips" {
-  value = aws_network_interface.f5_internal.private_ips
+  value       = aws_network_interface.f5_internal.private_ips
+  description = "Private IPs of F5 BIG-IP's internal interface."
 }
 
 output "f5_external_private_ips" {
-  value = aws_network_interface.f5_external.private_ips
+  value       = aws_network_interface.f5_external.private_ips
+  description = "Private IPs of F5 BIG-IP's external interface."
 }
 
 output "f5_admin_password" {
