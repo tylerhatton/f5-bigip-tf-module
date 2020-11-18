@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 sleep 3m
 
@@ -30,15 +30,6 @@ do_pkg_path="/var/config/rest/downloads/declarative_onboarding.rpm"
 do_json_pl="{\"operation\":\"INSTALL\",\"packageFilePath\":\"$do_pkg_path\"}"
 curl -L -o $do_pkg_path $do_pkg_url
 curl -k -u admin:${bigip_passsword} -X POST -d $do_json_pl "https://localhost/mgmt/shared/iapp/package-management-tasks"
-
-sleep 5
-
-#Install AS3
-as_pkg_url="https://github.com/F5Networks/f5-appsvcs-extension/releases/download/v3.19.1/f5-appsvcs-3.19.1-1.noarch.rpm"
-as_pkg_path="/var/config/rest/downloads/f5-appsvcs-3.19.1-1.noarch.rpm"
-as_json_pl="{\"operation\":\"INSTALL\",\"packageFilePath\":\"$as_pkg_path\"}"
-curl -L -o $as_pkg_path $as_pkg_url
-curl -k -u admin:${bigip_passsword} -X POST -d $as_json_pl "https://localhost/mgmt/shared/iapp/package-management-tasks"
 
 sleep 20
 
@@ -104,6 +95,14 @@ EOF
 
 curl -k -u admin:${bigip_passsword} -X POST -d @/tmp/do_payload.json "https://localhost/mgmt/shared/declarative-onboarding"
 
+sleep 60
+
+#Install AS3
+as_pkg_url="https://github.com/F5Networks/f5-appsvcs-extension/releases/download/v3.19.1/f5-appsvcs-3.19.1-1.noarch.rpm"
+as_pkg_path="/var/config/rest/downloads/f5-appsvcs-3.19.1-1.noarch.rpm"
+as_json_pl="{\"operation\":\"INSTALL\",\"packageFilePath\":\"$as_pkg_path\"}"
+curl -L -o $as_pkg_path $as_pkg_url
+curl -k -u admin:${bigip_passsword} -X POST -d $as_json_pl "https://localhost/mgmt/shared/iapp/package-management-tasks"
 
 # Cleanup
-# rm -f /tmp/do_payload.json
+rm -f /tmp/do_payload.json
