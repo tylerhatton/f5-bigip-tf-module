@@ -1,6 +1,6 @@
 # F5 LTM Terraform Template
 
-A Terraform module to provide a licensed F5 BIG-IP device provisioned in a multi-arm configuration.
+A Terraform module to provide a BIG-IQ licensed F5 BIG-IP device provisioned in a multi-arm configuration.
 
 ![Desktop Picture](/images/1.png)
 
