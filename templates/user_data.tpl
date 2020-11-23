@@ -97,12 +97,21 @@ curl -k -u admin:${bigip_passsword} -X POST -d @/tmp/do_payload.json "https://lo
 
 sleep 60
 
-#Install AS3
+# Install AS3
 as_pkg_url="https://github.com/F5Networks/f5-appsvcs-extension/releases/download/v3.19.1/f5-appsvcs-3.19.1-1.noarch.rpm"
 as_pkg_path="/var/config/rest/downloads/f5-appsvcs-3.19.1-1.noarch.rpm"
 as_json_pl="{\"operation\":\"INSTALL\",\"packageFilePath\":\"$as_pkg_path\"}"
 curl -L -o $as_pkg_path $as_pkg_url
 curl -k -u admin:${bigip_passsword} -X POST -d $as_json_pl "https://localhost/mgmt/shared/iapp/package-management-tasks"
+
+sleep 5
+
+# Install Telemetry Streaming
+ts_pkg_url="https://github.com/F5Networks/f5-telemetry-streaming/releases/download/v1.16.0/f5-telemetry-1.16.0-4.noarch.rpm"
+ts_pkg_path="/var/config/rest/downloads/f5-telemetry-1.16.0-4.noarch.rpm"
+ts_json_pl="{\"operation\":\"INSTALL\",\"packageFilePath\":\"$ts_pkg_path\"}"
+curl -L -o $ts_pkg_path $ts_pkg_url
+curl -k -u admin:${bigip_passsword} -X POST -d $ts_json_pl "https://localhost/mgmt/shared/iapp/package-management-tasks"
 
 # Cleanup
 rm -f /tmp/do_payload.json
