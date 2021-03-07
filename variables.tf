@@ -45,27 +45,6 @@ variable "internal_ips" {
   description = "List of private IP addresses used by F5 BIG-IP's internal interface."
 }
 
-variable "bigiq_server" {
-  type        = string
-  description = "Hostname or IP address of BIG-IQ license server that will license the F5 BIG-IP."
-}
-
-variable "bigiq_username" {
-  type        = string
-  default     = "admin"
-  description = "Username of BIG-IQ license server that will license the F5 BIG-IP."
-}
-
-variable "bigiq_password" {
-  type        = string
-  description = "Password of BIG-IQ license server that will license the F5 BIG-IP."
-}
-
-variable "license_pool" {
-  type        = string
-  description = "Name of BIG-IQ license pool that will license the F5 BIG-IP."
-}
-
 variable "hostname" {
   type        = string
   default     = "demo-f5.example.com"
@@ -78,7 +57,7 @@ variable "admin_password" {
 }
 
 variable "default_tags" {
-  type    = map
+  type    = map(any)
   default = {}
 }
 

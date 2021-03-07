@@ -13,10 +13,6 @@ data "template_file" "user_data" {
   template = file("${path.module}/templates/user_data.tpl")
 
   vars = {
-    bigiq_server        = var.bigiq_server
-    bigiq_username      = var.bigiq_username
-    bigiq_password      = var.bigiq_password
-    license_pool        = var.license_pool
     hostname            = var.hostname
     bigip_passsword     = local.admin_password
     internal_self_ip    = data.aws_network_interface.f5_internal.private_ip
@@ -30,7 +26,7 @@ data "aws_ami" "latest-f5-image" {
 
   filter {
     name   = "name"
-    values = ["F5 BIGIP-15.1.0.4-0.0.6 BYOL-All Modules 2Boot*"]
+    values = ["F5 BIGIP-15.1.0.4-0.0.6 PAYG-Good 25Mbps*"]
   }
 
   filter {
@@ -60,16 +56,6 @@ resource "aws_instance" "f5_auto_demo_ltm" {
     network_interface_id = aws_network_interface.f5_external.id
     device_index         = 2
   }
-
-  # provisioner "local-exec" {
-  #   when    = destroy
-  #   command = <<-EOF
-  #   curl -k -u ${var.bigiq_username}:${var.bigiq_password} -X POST \
-  #     -H "Content-Type: application/json" \
-  #     -d '{"licensePoolName":"${var.license_pool}","command":"revoke","address":"${data.aws_network_interface.f5_mgmt.private_ip}","assignmentType":"UNREACHABLE","macAddress":"${upper(data.aws_network_interface.f5_mgmt.mac_address)}","hypervisor":"aws"}' \
-  #     https://${var.bigiq_server}/mgmt/cm/device/tasks/licensing/pool/member-management
-  #   EOF
-  # }
 
   tags = merge(map("Name", "${var.name_prefix}F5_LTM"), var.default_tags)
 }

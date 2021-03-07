@@ -35,13 +35,9 @@ A Terraform module to provide a BIG-IQ licensed F5 BIG-IP device provisioned in 
 | management\_ip | Private IP Address of F5 BIG-IP's management interface. | `string` | n/a |
 | external\_ips | List of private IP addresses used by F5 BIG-IP's external interface. | `list(string)` | n/a |
 | internal\_ips | List of private IP addresses used by F5 BIG-IP's internal interface. | `list(string)` | n/a |
-| bigiq\_server | Hostname or IP address of BIG-IQ license server that will license the F5 BIG-IP. | `string` | n/a |
-| bigiq\_username | Username of BIG-IQ license server that will license the F5 BIG-IP. | `string` | `"admin"` |
-| bigiq\_password | Password of BIG-IQ license server that will license the F5 BIG-IP. | `string` | n/a |
-| license\_pool | Name of BIG-IQ license pool that will license the F5 BIG-IP. | `string` | n/a |
 | hostname | Hostname of F5 BIG-IP. | `string` | `"demo-f5.example.com"` |
 | admin\_password | Admin password for F5 management console and SSH server. | `string` | `""` |
-| default\_tags | n/a | `map` | `{}` |
+| default\_tags | n/a | `map(any)` | `{}` |
 | name\_prefix | n/a | `string` | `""` |
 | provisioned\_modules | List of provisioned BIG-IP modules configured on the F5 BIG-IP. | `list(string)` | <pre>[<br>  "\"ltm\": \"nominal\""<br>]</pre> |
 | mgmt\_sg\_ports | List of allowed ingress ports for management interface. | `list` | <pre>[<br>  {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "port": 22,<br>    "protocol": "tcp"<br>  },<br>  {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "port": 443,<br>    "protocol": "tcp"<br>  },<br>  {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "port": 8443,<br>    "protocol": "tcp"<br>  }<br>]</pre> |

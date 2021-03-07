@@ -43,19 +43,6 @@ cat << 'EOF' > /tmp/do_payload.json
     "Common": {
         "class": "Tenant",
         "hostname": "${hostname}",
-        "myLicense": {
-            "class": "License",
-            "licenseType": "licensePool",
-            "bigIqHost": "${bigiq_server}",
-            "bigIqUsername": "${bigiq_username}",
-            "bigIqPassword": "${bigiq_password}",
-            "licensePool": "${license_pool}",
-            "skuKeyword1": "BT",
-            "skuKeyword2": "10G",
-            "unitOfMeasure": "yearly",
-            "reachable": false,
-            "hypervisor": "aws"
-        },
         "myProvisioning": {
             "class": "Provision",
             ${provisioned_modules}
