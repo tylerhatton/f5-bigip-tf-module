@@ -26,7 +26,7 @@ data "aws_ami" "latest-f5-image" {
 
   filter {
     name   = "name"
-    values = ["F5 BIGIP-15.1.0.4-0.0.6 PAYG-Good 25Mbps*"]
+    values = ["F5 BIGIP-15.1.2.1-0.0.10 PAYG-Good 25Mbps*"]
   }
 
   filter {
